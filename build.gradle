@@ -8,3 +8,9 @@ node {
     download = true
     workDir = file("$rootDir/.node")
 }
+
+// =====
+// CLEAN
+// =====
+task clean
+clean.dependsOn gulp_clean
