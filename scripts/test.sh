@@ -25,7 +25,7 @@ mkdir -p src/nested/
 touch src/root.js
 touch src/nested/nested.js
 
-./gradlew build
+./gradlew clean build
 
 # assert
 [ -f build/web/root.js ]
@@ -42,12 +42,13 @@ mkdir -p src/nested/
 touch src/root.less
 touch src/nested/nested.less
 
-./gradlew build
+./gradlew clean build
 
 # assert
 [ -f build/web/root.css ]
+[ -f build/web/root.css.map ]
 [ -f build/web/nested/nested.css ]
+[ -f build/web/nested/nested.css.map ]
 
-# clean up the test case
 # clean up the test case
 rm -rf src/
