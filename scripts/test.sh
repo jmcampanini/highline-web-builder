@@ -6,3 +6,4 @@ cd web-builder
 ./gradlew npmInstall
 ./gradlew installGulp
 
+./gradlew gulp_helloworld
