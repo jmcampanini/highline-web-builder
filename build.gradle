@@ -14,3 +14,10 @@ node {
 // =====
 task clean
 clean.dependsOn gulp_clean
+
+
+// =====
+// BUILD
+// =====
+task build
+build.dependsOn gulp_build

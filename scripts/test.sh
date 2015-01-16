@@ -16,3 +16,12 @@ touch build/web/file.txt
 
 # ensure the file doesn't exist anymore
 [ ! -f build/web/file.txt ]
+
+
+# ======================================
+# BUILD
+# ======================================
+./gradlew build
+
+# ensure the js file was copied over
+[ -f build/web/test.js ]
