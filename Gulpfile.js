@@ -1,5 +1,6 @@
 var gulp = require('gulp');
+var del = require('del');
 
-gulp.task('helloworld', function() {
-    // do nothing
+gulp.task('clean', function() {
+    del('build/web');
 });
