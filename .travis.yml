@@ -1,0 +1,13 @@
+language: java
+
+# test on java 7+ to ensure compatability
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+
+# Run in a container, garauntee it will work without sudo
+sudo: false
+
+install: scripts/install.sh
+script: scripts/test.sh
