@@ -22,8 +22,9 @@ scripts/test.sh
 spec (work in progress)
 -----------------------
 
-0. the source directory is `src/`
+1. the source directory is `src/`
 1. the build directory is `build/web/`
-2. the gradle `clean` command calls the gulp `clean` command and deletes the build/web directory.
-3. the gradle `build` command calls the gulp `build` command and does the following:
-    1. copies over javascript files (src/**/*.js)
+1. the gradle `clean` command calls the gulp `clean` command and deletes the build/web directory.
+1. the gradle `build` command calls the gulp `build` command and does the following:
+    1. copies over javascript files from `src/**/*.js`
+    1. compiles LESS files from `src/**/*.less`
