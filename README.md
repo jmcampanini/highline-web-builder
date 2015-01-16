@@ -28,3 +28,4 @@ spec (work in progress)
 1. the gradle `build` command calls the gulp `build` command and does the following:
     1. copies over javascript files from `src/**/*.js`
     1. compiles LESS files from `src/**/*.less`
+        1. will generate source maps
