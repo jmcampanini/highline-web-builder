@@ -1,5 +1,7 @@
 #!/bin/sh
 
-# just run gradle properteis from the web-builder directory
-cd web-builder
-./gradlew properties
+# install gulp and the rest of the npm plugins
+./gradlew npmInstall installGulp
+
+# run a dummy command from gradle
+./gradlew gulp_helloworld

@@ -1,0 +1,10 @@
+plugins {
+    id "com.moowork.node" version "0.8"
+    id "com.moowork.gulp" version "0.1"
+}
+
+node {
+    version = "0.10.35"
+    download = true
+    workDir = file("$rootDir/.node")
+}
