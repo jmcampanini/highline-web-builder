@@ -18,7 +18,7 @@ touch build/web/file.txt
 
 
 # ======================================
-# BUILD
+# BUILD - JS COPY
 # ======================================
 # build the test case
 mkdir -p src/nested/
@@ -31,5 +31,23 @@ touch src/nested/nested.js
 [ -f build/web/root.js ]
 [ -f build/web/nested/nested.js ]
 
+# clean up the test case
+rm -rf src/
+
+# ======================================
+# BUILD - LESS COMPILE
+# ======================================
+# build the test case
+mkdir -p src/nested/
+touch src/root.less
+touch src/nested/nested.less
+
+./gradlew build
+
+# assert
+[ -f build/web/root.css ]
+[ -f build/web/nested/nested.css ]
+
+# clean up the test case
 # clean up the test case
 rm -rf src/
