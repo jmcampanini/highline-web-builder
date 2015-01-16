@@ -23,5 +23,6 @@ touch build/web/file.txt
 # ======================================
 ./gradlew build
 
-# ensure the js file was copied over
+# ensure the js files were copied over
 [ -f build/web/test.js ]
+[ -f build/web/nested/test.js ]
