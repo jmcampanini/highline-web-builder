@@ -1,17 +1,16 @@
 {
-  "name": "highline-web-builder",
-  "version": "0.1.0-dev",
+  "name": "highline-web-builder-spec",
+  "version": "0.1.0",
   "description": "",
-  "main": "index.js",
+  "main": "spec.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "del": "1.1.1",
-    "gulp": "3.8.10",
-    "gulp-less": "2.0.1",
-    "gulp-sourcemaps": "1.3.0"
+    "chai": "1.10.0",
+    "chai-fs": "0.1.0",
+    "mocha": "2.1.0"
   }
 }
