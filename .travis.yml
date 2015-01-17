@@ -9,5 +9,9 @@ jdk:
 # Run in a container, garauntee it will work without sudo
 sudo: false
 
-install: scripts/install.sh
-script: scripts/test.sh
+install:
+  - scripts/clean.sh
+  - scripts/installMocha.sh
+
+script:
+  - scripts/test.sh

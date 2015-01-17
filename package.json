@@ -1,6 +1,6 @@
 {
-  "name": "highline-web-builder-spec",
-  "version": "0.1.0",
+  "name": "highline-web-builder",
+  "version": "0.1.0-dev",
   "description": "",
   "main": "spec.js",
   "scripts": {
