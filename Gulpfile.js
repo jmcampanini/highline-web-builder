@@ -4,7 +4,7 @@ var less = require('gulp-less');
 var sourcemaps = require('gulp-sourcemaps');
 
 gulp.task('clean', function() {
-    del('build/web');
+    del('build/');
 });
 
 

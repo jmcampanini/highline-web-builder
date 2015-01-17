@@ -10,8 +10,7 @@ jdk:
 sudo: false
 
 install:
-  - scripts/clean.sh
-  - scripts/installMocha.sh
+  - scripts/install.sh
 
 script:
   - scripts/test.sh
