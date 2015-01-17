@@ -66,9 +66,15 @@ var fullSuite = function (isGulp) {
     //    });
     //});
     //
-    //describe('build', function () {
+    //describe('test', function () {
     //
     //    it('depends on check');
+    //    it('runs the js tests');
+    //});
+    //
+    //describe('build', function () {
+    //
+    //    it('depends on test');
     //
     //    describe('CSS', function () {
     //
