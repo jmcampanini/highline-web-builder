@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "Running with locally installed mocha..."
-node_modules/mocha/bin/mocha spec.js
+echo "\nRunning with locally installed mocha...\n"
+node_modules/mocha/bin/mocha spec.js --timeout 30s
