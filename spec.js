@@ -9,7 +9,15 @@ chai.use(require('chai-fs'));
 
 var BUILD_DIR = 'build/';
 
-var fullSuite = function () {
+var spawnClean = function (isGulp) {
+    if (isGulp) {
+        return spawn('gulp', ['clean']);
+    } else {
+        return spawn('./gradlew', ['clean', '--daemon', '--parallel']);
+    }
+};
+
+var fullSuite = function (isGulp) {
 
     describe('clean', function () {
 
@@ -25,7 +33,7 @@ var fullSuite = function () {
             fs.writeFileSync(path.join(BUILD_DIR, 'nested/nested.css'), 'Nested Level File');
 
             // call the clean task
-            var task = spawn('gulp', ['clean']);
+            var task = spawnClean(isGulp);
 
             // verify + complete
             task.on('close', function () {
@@ -155,10 +163,10 @@ var fullSuite = function () {
 };
 
 describe('via Gulp', function () {
-    fullSuite();
+    fullSuite(true);
 });
 
 
 describe('via Gradle', function () {
-    fullSuite();
+    fullSuite(false);
 });
