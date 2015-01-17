@@ -1,4 +1,4 @@
 #!/bin/sh
 
-echo "Installing Testing Dependencies Globally..."
-npm install --global
+echo "Installing Testing Dependencies..."
+npm install
