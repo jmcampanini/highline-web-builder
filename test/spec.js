@@ -72,65 +72,102 @@ var spec = function (isGulp) {
 
     describe('check', function () {
 
-        describe('Source CSS', function () {
-            it('works with no files exist', function (done) {
-                var task = spawnCheck(isGulp);
-                verifyCheckState(task, done);
+        describe('CSS', function () {
+            describe('Source CSS', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'css-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'css-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
             });
 
-            it('works with no source CSS files but others are', function (done) {
-                copyFixtureFor('check', 'css-non-css-files');
-                var task = spawnCheck(isGulp);
-                verifyCheckState(task, done);
+            describe('SASS', function () {
+                it('gives a good error if the gem is not installed');
+
+                it('only does .scss, not .sass', function (done) {
+                    copyFixtureFor('check', 'sass-ignores-sass-extension');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'sass-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'sass-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
             });
 
-            it('passes a basic lint test', function (done) {
-                copyFixtureFor('check', 'css-passes-linting');
-                var task = spawnCheck(isGulp);
-                verifyCheckState(task, done);
-            });
-
-            it('fails when there is lint present', function (done) {
-                copyFixtureFor('check', 'css-fails-linting');
-                var task = spawnCheck(isGulp);
-                verifyCheckState(task, done, true);
+            describe('LESS', function () {
+                it('passes a basic lint test');
+                it('fails when there is lint present');
             });
         });
 
-        //describe('LESS', function () {
-        //    it('lints source CSS files');
-        //});
-        //
-        //describe('SASS', function () {
-        //    it('lints source CSS files');
-        //});
-        //
-        //describe('Source JS', function () {
-        //    it('lints source JavaScript files');
-        //});
-        //
-        //describe('TypeScript', function () {
-        //    it('lints TypeScript files');
-        //});
-        //
-        //describe('CoffeeScript', function () {
-        //    it('lints CoffeeScript files');
-        //});
-        //
-        //describe('HTML', function () {
-        //    it('lints HTML files');
-        //});
+        describe('JS', function () {
+            describe('Source JS', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'js-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'js-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
+            });
+
+            describe('TypeScript', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'ts-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'ts-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
+            });
+
+            describe('CoffeeScript', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'cs-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'cs-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
+            });
+        });
+
+        describe('HTML', function () {
+            describe('Source HTML', function () {
+                it('passes a basic lint test');
+                it('fails when there is lint present');
+            });
+        });
     });
 
-    //describe('test', function () {
-    //
-    //    it('depends on check');
-    //    it('runs the js tests');
-    //});
-    //
     //describe('build', function () {
-    //
-    //    it('depends on test');
     //
     //    describe('CSS', function () {
     //
@@ -188,6 +225,12 @@ var spec = function (isGulp) {
     //        it('copies over SVGs');
     //        it('copies over other files');
     //    });
+    //});
+    //
+    //describe('test', function () {
+    //    it('depends on build');
+    //    it('depends on check');
+    //    it('runs the js tests');
     //});
     //
     //describe('buildMin', function () {

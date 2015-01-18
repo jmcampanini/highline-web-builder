@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -e
+set -x
+
 echo "\nClearing out old files...\n"
 rm -rf build/
 rm -rf .node/
@@ -14,3 +17,6 @@ npm install
 
 echo "\nInstalling the Gradle Dependencies...\n"
 ./gradlew npmInstall installGulp
+
+echo "\nInstalling the Ruby Dependencies...\n"
+gem install scss-lint

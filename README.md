@@ -1,6 +1,8 @@
 highline-web-builder
 ====================
 
+<img src="https://travis-ci.org/jmcampanini/highline-web-builder.svg?branch=develop">
+
 a standalone framework to build web applications. the plan is to use gradle + node + gulp to build applications
 according to a standardized specification.
 

@@ -1,0 +1,2 @@
+class allLowerCase
+  a: ""
