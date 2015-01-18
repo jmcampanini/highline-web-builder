@@ -13,19 +13,16 @@ var BUILD_DIR = 'build/';
 var SRC_DIR = 'src/';
 
 var spawnClean = function (isGulp) {
-    if (isGulp) {
-        return spawn('gulp', ['clean']);
-    } else {
-        return spawn('./gradlew', ['clean', '--daemon', '--parallel']);
-    }
+    return isGulp ?
+        spawn('gulp', ['clean']) :
+        spawn('./gradlew', ['clean', '--daemon', '--parallel']);
+
 };
 
 var spawnCheck = function (isGulp) {
-    if (isGulp) {
-        return spawn('gulp', ['check']);
-    } else {
-        return spawn('./gradlew', ['check', '--daemon', '--parallel']);
-    }
+    return isGulp ?
+        spawn('gulp', ['check']) :
+        spawn('./gradlew', ['check', '--daemon', '--parallel']);
 };
 
 var copyFixtureFor = function () {
@@ -34,38 +31,42 @@ var copyFixtureFor = function () {
     var fixturePath = path.join.apply(this, allParts);
 
     fs.copySync(fixturePath, SRC_DIR);
-}
+};
 
-var fullSuite = function (isGulp) {
+var verifyCleanState = function (task, done) {
+    task.on('close', function (code) {
+        expect(code).to.equal(0, 'exit code should be 0');
+        expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+        done();
+    });
+};
+
+var verifyCheckState = function (task, done, willFail) {
+    task.on('close', function (code) {
+        if (willFail) {
+            expect(code).to.not.equal(0, 'exit code should not be 0');
+        } else {
+            expect(code).to.equal(0, 'exit code should be 0');
+        }
+
+        expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+        done();
+    });
+};
+
+var spec = function (isGulp) {
 
     describe('clean', function () {
 
         it('removes the BUILD directory', function (done) {
             copyFixtureFor('clean', 'remove-build-dir');
-
-            // call the clean task
             var task = spawnClean(isGulp);
-
-            // verify + complete
-            task.on('close', function (code) {
-                expect(code).to.equal(0, 'exit code should be 0');
-                expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                done();
-            });
+            verifyCleanState(task, done);
         });
 
         it('does nothing when missing BUILD directory', function (done) {
-            // call the clean task
             var task = spawnClean(isGulp);
-
-            // verify + complete
-            task.on('close', function (code) {
-                expect(code).to.equal(0, 'exit code should be 0');
-                expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                done();
-            });
-
-            expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+            verifyCleanState(task, done);
         });
     });
 
@@ -74,52 +75,25 @@ var fullSuite = function (isGulp) {
         describe('Source CSS', function () {
             it('works with no files exist', function (done) {
                 var task = spawnCheck(isGulp);
-
-                // verify it ran correctly
-                task.on('close', function (code) {
-                    expect(code).to.equal(0, 'exit code should be 0');
-                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                    done();
-                });
+                verifyCheckState(task, done);
             });
 
             it('works with no source CSS files but others are', function (done) {
                 copyFixtureFor('check', 'css-non-css-files');
-
                 var task = spawnCheck(isGulp);
-
-                // verify it ran correctly
-                task.on('close', function (code) {
-                    expect(code).to.equal(0, 'exit code should be 0');
-                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                    done();
-                });
+                verifyCheckState(task, done);
             });
 
             it('passes a basic lint test', function (done) {
                 copyFixtureFor('check', 'css-passes-linting');
-
                 var task = spawnCheck(isGulp);
-
-                // verify it ran correctly
-                task.on('close', function (code) {
-                    expect(code).to.equal(0, 'exit code should be 0');
-                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                    done();
-                });
+                verifyCheckState(task, done);
             });
 
             it('fails when there is lint present', function (done) {
                 copyFixtureFor('check', 'css-fails-linting');
-
                 var task = spawnCheck(isGulp);
-
-                // verify it ran correctly
-                task.on('close', function (code) {
-                    expect(code).to.not.equal(0, 'exit code should not be 0');
-                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
-                    done();
-                });
+                verifyCheckState(task, done, true);
             });
         });
 
@@ -250,7 +224,7 @@ var fullSuite = function (isGulp) {
     //});
 };
 
-describe('via Gulp', function () {
+var fullSuite = function (isGulp) {
     beforeEach(function () {
         del.sync(BUILD_DIR);
         del.sync(SRC_DIR);
@@ -261,20 +235,14 @@ describe('via Gulp', function () {
         del.sync(SRC_DIR);
     });
 
+    spec(isGulp);
+};
+
+describe('via Gulp', function () {
     fullSuite(true);
 });
 
 
 describe('via Gradle', function () {
-    beforeEach(function () {
-        del.sync(BUILD_DIR);
-        del.sync(SRC_DIR);
-    });
-
-    after(function () {
-        del.sync(BUILD_DIR);
-        del.sync(SRC_DIR);
-    });
-
     fullSuite(false);
 });
