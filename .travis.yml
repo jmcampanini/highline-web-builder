@@ -4,6 +4,12 @@ language: java
 # Run in a container, garauntee it will work without sudo
 sudo: false
 
+# cache Node Modules + Gradle Wrapper
+cache:
+  directories:
+    - node_modules
+    - $HOME/.gradle/wrapper
+
 install:
   - scripts/install.sh
 
