@@ -25,6 +25,12 @@ var spawnCheck = function (isGulp) {
         spawn('./gradlew', ['check', '--daemon', '--parallel']);
 };
 
+var spawnBuild = function (isGulp) {
+    return isGulp ?
+        spawn('node_modules/gulp/bin/gulp.js', ['build']) :
+        spawn('./gradlew', ['build', '--daemon', '--parallel']);
+};
+
 var copyFixtureFor = function () {
     var argParts = _.values(arguments);
     var allParts = ['test/fixtures/'].concat(argParts);
@@ -50,6 +56,14 @@ var verifyCheckState = function (task, done, willFail) {
         }
 
         expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+        done();
+    });
+};
+
+var verifyBuildState = function (task, done, verifier) {
+    task.on('close', function (code) {
+        expect(code).to.equal(0, 'exit code should be 0');
+        verifier();
         done();
     });
 };
@@ -167,66 +181,75 @@ var spec = function (isGulp) {
         });
     });
 
-    //describe('build', function () {
-    //
-    //    describe('CSS', function () {
-    //
-    //        describe('LESS', function () {
-    //            it('is compiled');
-    //            it('ignores underscore prefixed LESS files');
-    //            it('generates source maps');
-    //        });
-    //
-    //        describe('SASS', function () {
-    //            it('is compiled');
-    //            it('generates source maps');
-    //
-    //        });
-    //
-    //        describe('Source CSS', function () {
-    //            it('is copied over');
-    //        });
-    //
-    //        describe('Resulting CSS', function () {
-    //            it('is linted');
-    //            it('is combed');
-    //            it('is auto-prefixed');
-    //        })
-    //    });
-    //
-    //    describe('JS', function () {
-    //
-    //        describe('TypeScript', function () {
-    //            it('is compiled');
-    //            it('generates source maps');
-    //        });
-    //
-    //        describe('CoffeeScript', function () {
-    //            it('is compiled');
-    //            it('generates source maps');
-    //        });
-    //
-    //        describe('Source JS', function () {
-    //            it('is copied over');
-    //        });
-    //
-    //        describe('Resulting JS', function () {
-    //            it('is linted');
-    //        });
-    //    });
-    //
-    //    describe('HTML', function () {
-    //        it('properly wires bower dependencies');
-    //        it('replaces variables in the HTML file');
-    //    });
-    //
-    //    describe('Other Assets', function () {
-    //        it('copies over fonts');
-    //        it('copies over SVGs');
-    //        it('copies over other files');
-    //    });
-    //});
-    //
+    describe('build', function () {
+
+        describe('CSS', function () {
+
+            describe('LESS', function () {
+                it('is compiled', function (done) {
+                    copyFixtureFor('build', 'less-compile', 'src');
+                    var task = spawnBuild(isGulp);
+
+                    verifyBuildState(task, done, function () {
+                        expect('build/app.css').to.be.a.file('app.css should be present').and.not.empty('and empty');
+                        expect('build/nested/nested.css').to.be.a.file('nested.css should be present').and.not.empty('and empty');
+                    });
+                });
+
+                it('ignores underscore prefixed LESS files');
+                it('generates source maps');
+            });
+
+            //describe('SASS', function () {
+            //    it('is compiled');
+            //    it('generates source maps');
+            //
+            //});
+            //
+            //describe('Source CSS', function () {
+            //    it('is copied over');
+            //});
+            //
+            //describe('Resulting CSS', function () {
+            //    it('is linted');
+            //    it('is combed');
+            //    it('is auto-prefixed');
+            //})
+        });
+
+        //describe('JS', function () {
+        //
+        //    describe('TypeScript', function () {
+        //        it('is compiled');
+        //        it('generates source maps');
+        //    });
+        //
+        //    describe('CoffeeScript', function () {
+        //        it('is compiled');
+        //        it('generates source maps');
+        //    });
+        //
+        //    describe('Source JS', function () {
+        //        it('is copied over');
+        //    });
+        //
+        //    describe('Resulting JS', function () {
+        //        it('is linted');
+        //    });
+        //});
+        //
+        //describe('HTML', function () {
+        //    it('properly wires bower dependencies');
+        //    it('replaces variables in the HTML file');
+        //});
+        //
+        //describe('Other Assets', function () {
+        //    it('copies over fonts');
+        //    it('copies over SVGs');
+        //    it('copies over other files');
+        //});
+    });
+
     //describe('test', function () {
     //    it('depends on build');
     //    it('depends on check');
