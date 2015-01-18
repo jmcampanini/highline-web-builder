@@ -41,7 +41,6 @@ var fullSuite = function (isGulp) {
     describe('clean', function () {
 
         it('removes the BUILD directory', function (done) {
-            // copy the fixture over
             copyFixtureFor('clean', 'remove-build-dir');
 
             // call the clean task
@@ -63,7 +62,7 @@ var fullSuite = function (isGulp) {
     describe('check', function () {
 
         describe('Source CSS', function () {
-            it('works with no files exist', function () {
+            it('works with no files exist', function (done) {
                 var task = spawnCheck(isGulp);
 
                 // verify it ran correctly
@@ -74,8 +73,32 @@ var fullSuite = function (isGulp) {
                 });
             });
 
-            it('works with no source CSS files but others are');
-            it('passes a basic lint test');
+            it('works with no source CSS files but others are', function(done) {
+                copyFixtureFor('check', 'non-css-files');
+
+                var task = spawnCheck(isGulp);
+
+                // verify it ran correctly
+                task.on('close', function (code) {
+                    expect(code).to.equal(0, 'exit code should be 0');
+                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+                    done();
+                });
+            });
+
+            it('passes a basic lint test', function(done) {
+                copyFixtureFor('check', 'css-passes-linting');
+
+                var task = spawnCheck(isGulp);
+
+                // verify it ran correctly
+                task.on('close', function (code) {
+                    expect(code).to.equal(0, 'exit code should be 0');
+                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+                    done();
+                });
+            });
+
             it('fails when there is lint present');
         });
 

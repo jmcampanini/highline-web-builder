@@ -1,10 +1,19 @@
 var gulp = require('gulp');
 var del = require('del');
-var less = require('gulp-less');
-var sourcemaps = require('gulp-sourcemaps');
+var csslint = require('gulp-csslint');
 
-gulp.task('clean', function() {
+//var less = require('gulp-less');
+//var sourcemaps = require('gulp-sourcemaps');
+
+gulp.task('clean', function () {
     del('build/');
+});
+
+gulp.task('check', function () {
+    gulp.src('src/**/*.css')
+        .pipe(csslint())
+        .pipe(csslint.reporter())       // display errors
+        .pipe(csslint.failReporter());  // fail on errors
 });
 
 //gulp.task('build', ['less'], function() {
