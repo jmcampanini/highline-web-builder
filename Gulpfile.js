@@ -1,6 +1,7 @@
 var gulp = require('gulp');
 var del = require('del');
 var csslint = require('gulp-csslint');
+var scsslint = require('gulp-scss-lint');
 
 //var less = require('gulp-less');
 //var sourcemaps = require('gulp-sourcemaps');
@@ -9,11 +10,21 @@ gulp.task('clean', function () {
     del('build/');
 });
 
-gulp.task('check', function () {
-    gulp.src('src/**/*.css')
+gulp.task('check', ['check-css', 'check-sass'], function () {
+    // do nothing
+});
+
+gulp.task('check-css', function() {
+    return gulp.src('src/**/*.css')
         .pipe(csslint())
         .pipe(csslint.reporter())       // display errors
         .pipe(csslint.failReporter());  // fail on errors
+});
+
+gulp.task('check-sass', function() {
+    return gulp.src('src/**/*.scss')
+        .pipe(scsslint())
+        .pipe(scsslint.failReporter()); // fail on errors
 });
 
 //gulp.task('build', ['less'], function() {

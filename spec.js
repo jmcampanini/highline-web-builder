@@ -97,11 +97,29 @@ var spec = function (isGulp) {
             });
         });
 
+        describe('SASS', function () {
+            it('gives a good error if the gem is not installed');
+
+            it('only does .scss, not .sass', function(done) {
+                copyFixtureFor('check', 'sass-ignores-sass-extension');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done);
+            });
+
+            it('passes a basic lint test', function (done) {
+                copyFixtureFor('check', 'sass-passes-linting');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done);
+            });
+
+            it('fails when there is lint present', function (done) {
+                copyFixtureFor('check', 'sass-fails-linting');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done, true);
+            });
+        });
+
         //describe('LESS', function () {
-        //    it('lints source CSS files');
-        //});
-        //
-        //describe('SASS', function () {
         //    it('lints source CSS files');
         //});
         //
