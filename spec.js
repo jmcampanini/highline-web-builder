@@ -54,7 +54,17 @@ var fullSuite = function (isGulp) {
             });
         });
 
-        it('does nothing when missing BUILD directory', function () {
+        it('does nothing when missing BUILD directory', function (done) {
+            // call the clean task
+            var task = spawnClean(isGulp);
+
+            // verify + complete
+            task.on('close', function (code) {
+                expect(code).to.equal(0, 'exit code should be 0');
+                expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+                done();
+            });
+
             expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
         });
     });
@@ -73,8 +83,8 @@ var fullSuite = function (isGulp) {
                 });
             });
 
-            it('works with no source CSS files but others are', function(done) {
-                copyFixtureFor('check', 'non-css-files');
+            it('works with no source CSS files but others are', function (done) {
+                copyFixtureFor('check', 'css-non-css-files');
 
                 var task = spawnCheck(isGulp);
 
@@ -86,7 +96,7 @@ var fullSuite = function (isGulp) {
                 });
             });
 
-            it('passes a basic lint test', function(done) {
+            it('passes a basic lint test', function (done) {
                 copyFixtureFor('check', 'css-passes-linting');
 
                 var task = spawnCheck(isGulp);
@@ -99,7 +109,18 @@ var fullSuite = function (isGulp) {
                 });
             });
 
-            it('fails when there is lint present');
+            it('fails when there is lint present', function (done) {
+                copyFixtureFor('check', 'css-fails-linting');
+
+                var task = spawnCheck(isGulp);
+
+                // verify it ran correctly
+                task.on('close', function (code) {
+                    expect(code).to.not.equal(0, 'exit code should not be 0');
+                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+                    done();
+                });
+            });
         });
 
         //describe('LESS', function () {
@@ -235,7 +256,7 @@ describe('via Gulp', function () {
         del.sync(SRC_DIR);
     });
 
-    after(function() {
+    after(function () {
         del.sync(BUILD_DIR);
         del.sync(SRC_DIR);
     });
@@ -244,10 +265,16 @@ describe('via Gulp', function () {
 });
 
 
-//describe('via Gradle', function () {
-//    beforeEach(function () {
-//        del.sync(BUILD_DIR);
-//    });
-//
-//    fullSuite(false);
-//});
+describe('via Gradle', function () {
+    beforeEach(function () {
+        del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
+    });
+
+    after(function () {
+        del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
+    });
+
+    fullSuite(false);
+});
