@@ -3,6 +3,7 @@ var del = require('del');
 var csslint = require('gulp-csslint');
 var scsslint = require('gulp-scss-lint');
 var eslint = require('gulp-eslint');
+var tslint = require('gulp-tslint');
 
 //var less = require('gulp-less');
 //var sourcemaps = require('gulp-sourcemaps');
@@ -11,28 +12,34 @@ gulp.task('clean', function () {
     del('build/');
 });
 
-gulp.task('check', ['check-css', 'check-sass', 'check-js'], function () {
+gulp.task('check', ['check-css', 'check-sass', 'check-js', 'check-ts'], function () {
     // do nothing
 });
 
-gulp.task('check-css', function() {
+gulp.task('check-css', function () {
     return gulp.src('src/**/*.css')
         .pipe(csslint())
-        .pipe(csslint.reporter())       // display errors
-        .pipe(csslint.failReporter());  // fail on errors
+        .pipe(csslint.reporter())
+        .pipe(csslint.failReporter());
 });
 
-gulp.task('check-sass', function() {
+gulp.task('check-sass', function () {
     return gulp.src('src/**/*.scss')
         .pipe(scsslint())
-        .pipe(scsslint.failReporter()); // fail on errors
+        .pipe(scsslint.failReporter());
 });
 
-gulp.task('check-js', function() {
+gulp.task('check-js', function () {
     return gulp.src('src/**/*.js')
         .pipe(eslint())
-        .pipe(eslint.format())          // displays errors
-        .pipe(eslint.failOnError());    // fails on errors
+        .pipe(eslint.format())
+        .pipe(eslint.failOnError());
+});
+
+gulp.task('check-ts', function () {
+    return gulp.src('src/**/*.ts')
+        .pipe(tslint())
+        .pipe(tslint.report('verbose'));
 });
 
 //gulp.task('build', ['less'], function() {

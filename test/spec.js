@@ -140,10 +140,20 @@ var spec = function (isGulp) {
                 });
             });
 
-            //describe('TypeScript', function () {
-            //    it('lints TypeScript files');
-            //});
-            //
+            describe('TypeScript', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'ts-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'ts-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
+            });
+
             //describe('CoffeeScript', function () {
             //    it('lints CoffeeScript files');
             //});
