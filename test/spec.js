@@ -14,14 +14,14 @@ var SRC_DIR = 'src/';
 
 var spawnClean = function (isGulp) {
     return isGulp ?
-        spawn('gulp', ['clean']) :
+        spawn('node_modules/gulp/bin/gulp.js', ['clean']) :
         spawn('./gradlew', ['clean', '--daemon', '--parallel']);
 
 };
 
 var spawnCheck = function (isGulp) {
     return isGulp ?
-        spawn('gulp', ['check']) :
+        spawn('node_modules/gulp/bin/gulp.js', ['check']) :
         spawn('./gradlew', ['check', '--daemon', '--parallel']);
 };
 

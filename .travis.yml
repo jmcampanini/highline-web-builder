@@ -9,6 +9,7 @@ cache:
   directories:
     - node_modules
     - $HOME/.gradle/wrapper
+    - .node
 
 install:
   - scripts/install.sh
