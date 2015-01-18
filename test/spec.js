@@ -74,17 +74,6 @@ var spec = function (isGulp) {
 
         describe('CSS', function () {
             describe('Source CSS', function () {
-                it('works with no files exist', function (done) {
-                    var task = spawnCheck(isGulp);
-                    verifyCheckState(task, done);
-                });
-
-                it('works with no source CSS files but others are', function (done) {
-                    copyFixtureFor('check', 'css-non-css-files');
-                    var task = spawnCheck(isGulp);
-                    verifyCheckState(task, done);
-                });
-
                 it('passes a basic lint test', function (done) {
                     copyFixtureFor('check', 'css-passes-linting');
                     var task = spawnCheck(isGulp);
@@ -120,9 +109,10 @@ var spec = function (isGulp) {
                 });
             });
 
-            //describe('LESS', function () {
-            //    it('lints source CSS files');
-            //});
+            describe('LESS', function () {
+                it('passes a basic lint test');
+                it('fails when there is lint present');
+            });
         });
 
         describe('JS', function () {
@@ -154,27 +144,30 @@ var spec = function (isGulp) {
                 });
             });
 
-            //describe('CoffeeScript', function () {
-            //    it('lints CoffeeScript files');
-            //});
+            describe('CoffeeScript', function () {
+                it('passes a basic lint test', function (done) {
+                    copyFixtureFor('check', 'cs-passes-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done);
+                });
+
+                it('fails when there is lint present', function (done) {
+                    copyFixtureFor('check', 'cs-fails-linting');
+                    var task = spawnCheck(isGulp);
+                    verifyCheckState(task, done, true);
+                });
+            });
         });
-        //
-        //describe('HTML', function () {
-        //    describe('Source HTML', function () {
-        //        it('lints HTML files');
-        //    });
-        //});
+
+        describe('HTML', function () {
+            describe('Source HTML', function () {
+                it('passes a basic lint test');
+                it('fails when there is lint present');
+            });
+        });
     });
 
-    //describe('test', function () {
-    //
-    //    it('depends on check');
-    //    it('runs the js tests');
-    //});
-    //
     //describe('build', function () {
-    //
-    //    it('depends on test');
     //
     //    describe('CSS', function () {
     //
@@ -232,6 +225,12 @@ var spec = function (isGulp) {
     //        it('copies over SVGs');
     //        it('copies over other files');
     //    });
+    //});
+    //
+    //describe('test', function () {
+    //    it('depends on build');
+    //    it('depends on check');
+    //    it('runs the js tests');
     //});
     //
     //describe('buildMin', function () {
