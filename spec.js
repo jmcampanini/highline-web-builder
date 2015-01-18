@@ -1,14 +1,16 @@
+var _ = require('lodash');
 var chai = require('chai');
 var expect = chai.expect;
 
 var del = require('del');
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var spawn = require('child_process').spawn;
 
 chai.use(require('chai-fs'));
 
 var BUILD_DIR = 'build/';
+var SRC_DIR = 'src/';
 
 var spawnClean = function (isGulp) {
     if (isGulp) {
@@ -18,7 +20,7 @@ var spawnClean = function (isGulp) {
     }
 };
 
-var spawnCheck = function(isGulp) {
+var spawnCheck = function (isGulp) {
     if (isGulp) {
         return spawn('gulp', ['check']);
     } else {
@@ -26,16 +28,21 @@ var spawnCheck = function(isGulp) {
     }
 };
 
+var copyFixtureFor = function () {
+    var argParts = _.values(arguments);
+    var allParts = ['test/fixtures/'].concat(argParts);
+    var fixturePath = path.join.apply(this, allParts);
+
+    fs.copySync(fixturePath, SRC_DIR);
+}
+
 var fullSuite = function (isGulp) {
 
     describe('clean', function () {
 
         it('removes the BUILD directory', function (done) {
-            // create files to delete
-            fs.mkdirSync(BUILD_DIR);
-            fs.mkdirSync(path.join(BUILD_DIR, 'nested'));
-            fs.writeFileSync(path.join(BUILD_DIR, 'root.js'), 'Root Level File');
-            fs.writeFileSync(path.join(BUILD_DIR, 'nested/nested.css'), 'Nested Level File');
+            // copy the fixture over
+            copyFixtureFor('clean', 'remove-build-dir');
 
             // call the clean task
             var task = spawnClean(isGulp);
@@ -56,7 +63,7 @@ var fullSuite = function (isGulp) {
     describe('check', function () {
 
         describe('Source CSS', function () {
-            it('works with no files exist', function() {
+            it('works with no files exist', function () {
                 var task = spawnCheck(isGulp);
 
                 // verify it ran correctly
@@ -202,6 +209,12 @@ var fullSuite = function (isGulp) {
 describe('via Gulp', function () {
     beforeEach(function () {
         del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
+    });
+
+    after(function() {
+        del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
     });
 
     fullSuite(true);
