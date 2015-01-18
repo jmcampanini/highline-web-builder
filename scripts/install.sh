@@ -1,5 +1,8 @@
 #!/bin/sh
 
+set -e
+set -x
+
 echo "\nClearing out old files...\n"
 rm -rf build/
 rm -rf .node/
