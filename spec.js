@@ -1,74 +1,136 @@
+var _ = require('lodash');
 var chai = require('chai');
-var assert = chai.assert;
+var expect = chai.expect;
+
 var del = require('del');
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 var spawn = require('child_process').spawn;
 
 chai.use(require('chai-fs'));
 
 var BUILD_DIR = 'build/';
+var SRC_DIR = 'src/';
 
 var spawnClean = function (isGulp) {
-    if (isGulp) {
-        return spawn('gulp', ['clean']);
-    } else {
-        return spawn('./gradlew', ['clean', '--daemon', '--parallel']);
-    }
+    return isGulp ?
+        spawn('gulp', ['clean']) :
+        spawn('./gradlew', ['clean', '--daemon', '--parallel']);
+
 };
 
-var fullSuite = function (isGulp) {
+var spawnCheck = function (isGulp) {
+    return isGulp ?
+        spawn('gulp', ['check']) :
+        spawn('./gradlew', ['check', '--daemon', '--parallel']);
+};
+
+var copyFixtureFor = function () {
+    var argParts = _.values(arguments);
+    var allParts = ['test/fixtures/'].concat(argParts);
+    var fixturePath = path.join.apply(this, allParts);
+
+    fs.copySync(fixturePath, SRC_DIR);
+};
+
+var verifyCleanState = function (task, done) {
+    task.on('close', function (code) {
+        expect(code).to.equal(0, 'exit code should be 0');
+        expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+        done();
+    });
+};
+
+var verifyCheckState = function (task, done, willFail) {
+    task.on('close', function (code) {
+        if (willFail) {
+            expect(code).to.not.equal(0, 'exit code should not be 0');
+        } else {
+            expect(code).to.equal(0, 'exit code should be 0');
+        }
+
+        expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+        done();
+    });
+};
+
+var spec = function (isGulp) {
 
     describe('clean', function () {
 
-        beforeEach(function () {
-            del.sync(BUILD_DIR);
-        });
-
         it('removes the BUILD directory', function (done) {
-            // create files to delete
-            fs.mkdirSync(BUILD_DIR);
-            fs.mkdirSync(path.join(BUILD_DIR, 'nested'));
-            fs.writeFileSync(path.join(BUILD_DIR, 'root.js'), 'Root Level File');
-            fs.writeFileSync(path.join(BUILD_DIR, 'nested/nested.css'), 'Nested Level File');
-
-            // call the clean task
+            copyFixtureFor('clean', 'remove-build-dir');
             var task = spawnClean(isGulp);
-
-            // verify + complete
-            task.on('close', function () {
-                assert.notPathExists(BUILD_DIR, 'build directory should not exist');
-                done();
-            });
+            verifyCleanState(task, done);
         });
 
-        it('does nothing when missing BUILD directory', function () {
-            assert.notPathExists(BUILD_DIR, 'build directory should not exist');
+        it('does nothing when missing BUILD directory', function (done) {
+            var task = spawnClean(isGulp);
+            verifyCleanState(task, done);
         });
     });
 
-    //describe('check', function () {
+    describe('check', function () {
+
+        describe('Source CSS', function () {
+            it('works with no files exist', function (done) {
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done);
+            });
+
+            it('works with no source CSS files but others are', function (done) {
+                copyFixtureFor('check', 'css-non-css-files');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done);
+            });
+
+            it('passes a basic lint test', function (done) {
+                copyFixtureFor('check', 'css-passes-linting');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done);
+            });
+
+            it('fails when there is lint present', function (done) {
+                copyFixtureFor('check', 'css-fails-linting');
+                var task = spawnCheck(isGulp);
+                verifyCheckState(task, done, true);
+            });
+        });
+
+        //describe('LESS', function () {
+        //    it('lints source CSS files');
+        //});
+        //
+        //describe('SASS', function () {
+        //    it('lints source CSS files');
+        //});
+        //
+        //describe('Source JS', function () {
+        //    it('lints source JavaScript files');
+        //});
+        //
+        //describe('TypeScript', function () {
+        //    it('lints TypeScript files');
+        //});
+        //
+        //describe('CoffeeScript', function () {
+        //    it('lints CoffeeScript files');
+        //});
+        //
+        //describe('HTML', function () {
+        //    it('lints HTML files');
+        //});
+    });
+
+    //describe('test', function () {
     //
-    //    describe('CSS', function () {
-    //        it('lints SASS files');
-    //        it('lints LESS files');
-    //        it('lints source CSS files');
-    //    });
-    //
-    //    describe('JS', function () {
-    //        it('lints TypeScript files');
-    //        it('lints CoffeeScript files');
-    //        it('lints source JavaScript files');
-    //    });
-    //
-    //    describe('HTML', function () {
-    //        it('lints HTML files');
-    //    });
+    //    it('depends on check');
+    //    it('runs the js tests');
     //});
     //
     //describe('build', function () {
     //
-    //    it('depends on check');
+    //    it('depends on test');
     //
     //    describe('CSS', function () {
     //
@@ -160,6 +222,20 @@ var fullSuite = function (isGulp) {
     //
     //    it('builds an archive from the built site');
     //});
+};
+
+var fullSuite = function (isGulp) {
+    beforeEach(function () {
+        del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
+    });
+
+    after(function () {
+        del.sync(BUILD_DIR);
+        del.sync(SRC_DIR);
+    });
+
+    spec(isGulp);
 };
 
 describe('via Gulp', function () {

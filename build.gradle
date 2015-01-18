@@ -15,9 +15,8 @@ node {
 task clean
 clean.dependsOn gulp_clean
 
-
 // =====
-// BUILD
+// CLEAN
 // =====
-task build
-build.dependsOn gulp_build
+task check
+check.dependsOn gulp_check
