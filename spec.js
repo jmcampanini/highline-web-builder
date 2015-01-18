@@ -1,5 +1,6 @@
 var chai = require('chai');
-var assert = chai.assert;
+var expect = chai.expect;
+
 var del = require('del');
 var fs = require('fs');
 var path = require('path');
@@ -17,13 +18,17 @@ var spawnClean = function (isGulp) {
     }
 };
 
+var spawnCheck = function(isGulp) {
+    if (isGulp) {
+        return spawn('gulp', ['check']);
+    } else {
+        return spawn('./gradlew', ['check', '--daemon', '--parallel']);
+    }
+};
+
 var fullSuite = function (isGulp) {
 
     describe('clean', function () {
-
-        beforeEach(function () {
-            del.sync(BUILD_DIR);
-        });
 
         it('removes the BUILD directory', function (done) {
             // create files to delete
@@ -36,36 +41,62 @@ var fullSuite = function (isGulp) {
             var task = spawnClean(isGulp);
 
             // verify + complete
-            task.on('close', function () {
-                assert.notPathExists(BUILD_DIR, 'build directory should not exist');
+            task.on('close', function (code) {
+                expect(code).to.equal(0, 'exit code should be 0');
+                expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
                 done();
             });
         });
 
         it('does nothing when missing BUILD directory', function () {
-            assert.notPathExists(BUILD_DIR, 'build directory should not exist');
+            expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
         });
     });
 
-    //describe('check', function () {
-    //
-    //    describe('CSS', function () {
-    //        it('lints SASS files');
-    //        it('lints LESS files');
-    //        it('lints source CSS files');
-    //    });
-    //
-    //    describe('JS', function () {
-    //        it('lints TypeScript files');
-    //        it('lints CoffeeScript files');
-    //        it('lints source JavaScript files');
-    //    });
-    //
-    //    describe('HTML', function () {
-    //        it('lints HTML files');
-    //    });
-    //});
-    //
+    describe('check', function () {
+
+        describe('Source CSS', function () {
+            it('works with no files exist', function() {
+                var task = spawnCheck(isGulp);
+
+                // verify it ran correctly
+                task.on('close', function (code) {
+                    expect(code).to.equal(0, 'exit code should be 0');
+                    expect(BUILD_DIR).to.not.be.a.path('build directory should not exist');
+                    done();
+                });
+            });
+
+            it('works with no source CSS files but others are');
+            it('passes a basic lint test');
+            it('fails when there is lint present');
+        });
+
+        //describe('LESS', function () {
+        //    it('lints source CSS files');
+        //});
+        //
+        //describe('SASS', function () {
+        //    it('lints source CSS files');
+        //});
+        //
+        //describe('Source JS', function () {
+        //    it('lints source JavaScript files');
+        //});
+        //
+        //describe('TypeScript', function () {
+        //    it('lints TypeScript files');
+        //});
+        //
+        //describe('CoffeeScript', function () {
+        //    it('lints CoffeeScript files');
+        //});
+        //
+        //describe('HTML', function () {
+        //    it('lints HTML files');
+        //});
+    });
+
     //describe('test', function () {
     //
     //    it('depends on check');
@@ -169,10 +200,18 @@ var fullSuite = function (isGulp) {
 };
 
 describe('via Gulp', function () {
+    beforeEach(function () {
+        del.sync(BUILD_DIR);
+    });
+
     fullSuite(true);
 });
 
 
-describe('via Gradle', function () {
-    fullSuite(false);
-});
+//describe('via Gradle', function () {
+//    beforeEach(function () {
+//        del.sync(BUILD_DIR);
+//    });
+//
+//    fullSuite(false);
+//});
