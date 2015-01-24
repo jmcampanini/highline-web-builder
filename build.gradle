@@ -16,7 +16,14 @@ task clean
 clean.dependsOn gulp_clean
 
 // =====
-// CLEAN
+// CHECK
 // =====
 task check
 check.dependsOn gulp_check
+
+// =====
+// BUILD
+// =====
+task build
+build.dependsOn gulp_build
+
