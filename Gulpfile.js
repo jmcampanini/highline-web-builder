@@ -57,7 +57,7 @@ gulp.task('build', ['build-less'], function() {
 });
 
 gulp.task('build-less', function() {
-    return gulp.src('src/**/*.less')
+    return gulp.src(['src/**/*.less', '!src/**/_*.less'])
         .pipe(sourcemaps.init())
         .pipe(less())
         .pipe(sourcemaps.write('.'))

@@ -183,21 +183,41 @@ var spec = function (isGulp) {
 
     describe('build', function () {
 
+        it('depends on check');
+        it('depends on test');
+
         describe('CSS', function () {
 
             describe('LESS', function () {
                 it('is compiled', function (done) {
-                    copyFixtureFor('build', 'less-compile', 'src');
+                    copyFixtureFor('build', 'less-compile');
                     var task = spawnBuild(isGulp);
 
                     verifyBuildState(task, done, function () {
-                        expect('build/app.css').to.be.a.file('app.css should be present').and.not.empty('and empty');
-                        expect('build/nested/nested.css').to.be.a.file('nested.css should be present').and.not.empty('and empty');
+                        expect('build/app.css').to.be.a.file('app.css should be present').and.not.empty('and not empty');
+                        expect('build/nested/nested.css').to.be.a.file('nested.css should be present').and.not.empty('and not empty');
                     });
                 });
 
-                it('ignores underscore prefixed LESS files');
-                it('generates source maps');
+                it('ignores underscore prefixed LESS files', function (done) {
+                    copyFixtureFor('build', 'less-compile-prefix');
+                    var task = spawnBuild(isGulp);
+
+                    verifyBuildState(task, done, function () {
+                        expect('build/yes.css').to.be.a.file('yes.css should be present').and.not.empty('and not empty');
+                        expect('build/_no.css').to.not.be.a.path('_no.css should not be present - prefixed file');
+                    });
+                });
+
+                it('generates source maps', function (done) {
+                    copyFixtureFor('build', 'less-sourcemaps');
+                    var task = spawnBuild(isGulp);
+
+                    verifyBuildState(task, done, function () {
+                        expect('build/app.css').to.be.a.file('app.css should be present').and.not.empty('and not empty');
+                        expect('build/app.css.map').to.be.a.file('app.css.map source map should be present').and.not.empty('and not empty');
+                    });
+                });
             });
 
             //describe('SASS', function () {
